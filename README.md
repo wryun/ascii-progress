@@ -91,6 +91,7 @@ Optional function to call when the progress bar completes.
 
 ### Methods
 
+ - `setSchema(schema)` Update the schema of the progress bar.
  - `tick(delta, tokens)` Update ticks of the progress bar by `delta`, then render the progress bar with optional `tokens`.
  - `update(ratio, tokens)` Update the progress bar to `ratio` by percentage, then render the progress bar with optional `tokens`.
  - `clear()` Clean the progress bar in the terminal.

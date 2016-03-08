@@ -32,6 +32,7 @@ function ProgressBar(options) {
 
   // callback on completed
   this.callback = options.callback;
+
   this.setSchema(options.schema);
 
   instances.push(this);
@@ -75,9 +76,7 @@ ProgressBar.prototype.tick = function (delta, tokens) {
   this.tokenize(tokens);
 
   if (this.current >= this.total) {
-    this.completed = true;
     this.terminate();
-    this.callback && this.callback(this);
   }
 };
 
@@ -330,25 +329,40 @@ ProgressBar.prototype.colorize = function (output) {
 ProgressBar.prototype.clear = function () {
 
   if (this.output) {
-
-    var lines = this.raw.split('\n');
-
     this.cursor.moveTo(this.origin.row, this.origin.col);
 
+    var lines = this.raw.split('\n');
     for (var i = 0, l = lines.length; i < l; i++) {
-      this.cursor.eraseLine();
-      this.cursor.write(repeatChar(lines[i].length, ' ') + ' \n');
+      this.cursor
+        .eraseLine()
+        .moveDown();
     }
+    this.cursor.moveTo(this.origin.row, this.origin.col);
   }
 };
 
 ProgressBar.prototype.terminate = function () {
 
+  this.completed = true;
+
+  var currentPosition = cursorPos.sync();
+
   if (this.clean) {
-    var pos = cursorPos.sync();
+
     this.clear();
-    this.cursor.moveTo(pos.row, pos.col);
+
+    var lines = this.raw.split('\n');
+    for (var i = 0, l = lines.length; i < l; i++) {
+      this.cursor
+        .deleteLine()
+        .moveDown();
+    }
   }
+
+  this.cursor.moveTo(this.origin.row, this.origin.col);
+
+  this.callback && this.callback(this);
+  this.cursor.moveTo(currentPosition.row, currentPosition.col);
 };
 
 
