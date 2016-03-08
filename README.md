@@ -2,6 +2,8 @@
 
 > Render ascii progress bar(s) on the terminal.
 
+![snapshot](snapshot.gif?raw=true)
+
 ## Install
 
 ```
@@ -174,6 +176,25 @@ And with the `bg` prefix, such as `bgRed`, the color will be applied to the back
 ```
 
 The above progress bar has blue background and red foreground.
+
+### Gradient
+
+```
+:bar.gradient(red,blue)
+```
+
+The arguments can be color names or hex color:
+
+- red
+- cyan
+- blue
+- grey
+- white
+- black
+- green
+- yellow
+- magenta
+- #xxxxxx
 
 
 ### Font style
