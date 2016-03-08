@@ -31,4 +31,4 @@ var iv = setInterval(function () {
     clearInterval(iv);
   }
 
-}, 100);
+}, 30);
