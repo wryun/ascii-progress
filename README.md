@@ -2,7 +2,7 @@
 
 > Render ascii progress bar(s) on the terminal.
 
-![snapshot](snapshot.gif?raw=true)
+![snapshot](https://raw.githubusercontent.com/bubkoo/node-progress-bars/master/snapshot.gif)
 
 ## Install
 
