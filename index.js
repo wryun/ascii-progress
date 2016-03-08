@@ -336,6 +336,7 @@ ProgressBar.prototype.clear = function () {
     this.cursor.moveTo(this.origin.row, this.origin.col);
 
     for (var i = 0, l = lines.length; i < l; i++) {
+      this.cursor.eraseLine();
       this.cursor.write(repeatChar(lines[i].length, ' ') + ' \n');
     }
   }
@@ -455,8 +456,8 @@ function parseGradient(str) {
   var match = str.match(/^\((.+),(.+)\)/);
   if (match) {
 
-    var color1 = match[1];
-    var color2 = match[2];
+    var color1 = match[1].trim();
+    var color2 = match[2].trim();
 
     color1 = startWith(color1, '#') ? hex2rgb(color1) : name2rgb(color1);
     color2 = startWith(color2, '#') ? hex2rgb(color2) : name2rgb(color2);
