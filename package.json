@@ -1,0 +1,36 @@
+{
+  "name": "node-progress-bars",
+  "version": "0.0.1",
+  "description": "Render ascii progress bar(s) on the terminal.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bubkoo/node-progress-bars.git"
+  },
+  "keywords": [
+    "progress",
+    "bar",
+    "meter",
+    "ascii",
+    "status",
+    "console",
+    "terminal",
+    "ansi.js"
+  ],
+  "author": {
+    "name": "bubkoo",
+    "email": "bubkoo@163.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bubkoo/node-progress-bars/issues"
+  },
+  "homepage": "https://github.com/bubkoo/node-progress-bars",
+  "dependencies": {
+    "ansi.js": "0.0.2",
+    "get-cursor-position": "0.0.2"
+  }
+}
