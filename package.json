@@ -1,6 +1,6 @@
 {
   "name": "node-progress-bars",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Render ascii progress bar(s) on the terminal.",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/bubkoo/node-progress-bars",
   "dependencies": {
-    "ansi.js": "0.0.3",
+    "ansi.js": "0.0.4",
     "get-cursor-position": "0.0.5"
   }
 }
