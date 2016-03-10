@@ -48,8 +48,12 @@ module.exports = ProgressBar;
 // proto
 // -----
 
-ProgressBar.prototype.setSchema = function (schema) {
+ProgressBar.prototype.setSchema = function (schema, refresh) {
   this.schema = schema || ' [:bar] :current/:total :percent :elapseds :etas';
+
+  if (refresh) {
+    this.refresh(refresh);
+  }
 };
 
 ProgressBar.prototype.tick = function (delta, tokens) {
@@ -73,7 +77,7 @@ ProgressBar.prototype.tick = function (delta, tokens) {
   }
 
   this.current += delta;
-  this.tokenize(tokens);
+  this.refresh(tokens);
 
   if (this.current >= this.total) {
     this.terminate();
@@ -88,7 +92,7 @@ ProgressBar.prototype.update = function (ratio, tokens) {
   this.tick(delta, tokens);
 };
 
-ProgressBar.prototype.tokenize = function (tokens) {
+ProgressBar.prototype.refresh = function (tokens) {
 
   var ratio = this.current / this.total;
 
@@ -106,7 +110,7 @@ ProgressBar.prototype.tokenize = function (tokens) {
     .replace(/:eta/g, formatTime(eta))
     .replace(/:percent/g, toFixed(percent, 0) + '%');
 
-  if (tokens) {
+  if (tokens && typeof tokens === 'object') {
     for (var key in tokens) {
       if (tokens.hasOwnProperty(key)) {
         output = output.replace(new RegExp(':' + key, 'g'), ('' + tokens[key]) || placeholder);
