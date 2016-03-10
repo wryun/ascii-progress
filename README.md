@@ -59,7 +59,7 @@ than `1` the width is relative, otherwise it is absolute with.
 Default `options.total`.
 
 
-#### completed 
+#### filled 
 
 Completion character. 
 
@@ -117,7 +117,7 @@ formatting methods can be used to customer you progress bar.
 
 These are tokens you can use in the format of your progress bar.
 
-- `:completed` Completed part of the progress bar.
+- `:filled` Completed part of the progress bar.
 - `:blank` Blank part of  the progress bar.
 - `:bar` Whole progress bar, equal to `:completed:blank`.
 - `:current` Current tick number.

@@ -12,7 +12,7 @@ function ProgressBar(options) {
   this.cursor  = ansi(process.stdout);
   this.total   = options.total || 100;
   this.current = options.current || 0;
-  this.width   = options.width || this.total;
+  this.width   = options.width || 60;
 
   if (typeof this.width === 'string') {
     if (endWith(this.width, '%')) {
@@ -24,12 +24,11 @@ function ProgressBar(options) {
 
   this.clean = !!options.clean;
   this.chars = {
-    completed: options.completed || '▇',
-    blank    : options.blank || '—'
+    blank : options.blank || '—',
+    filled: options.filled || '▇'
   };
 
   this.completed = false;
-
   // callback on completed
   this.callback = options.callback;
 
@@ -52,7 +51,7 @@ ProgressBar.prototype.setSchema = function (schema, refresh) {
   this.schema = schema || ' [:bar] :current/:total :percent :elapseds :etas';
 
   if (refresh) {
-    this.refresh(refresh);
+    this.compile(refresh);
   }
 };
 
@@ -77,7 +76,7 @@ ProgressBar.prototype.tick = function (delta, tokens) {
   }
 
   this.current += delta;
-  this.refresh(tokens);
+  this.compile(tokens);
 
   if (this.current >= this.total) {
     this.terminate();
@@ -92,20 +91,20 @@ ProgressBar.prototype.update = function (ratio, tokens) {
   this.tick(delta, tokens);
 };
 
-ProgressBar.prototype.refresh = function (tokens) {
+ProgressBar.prototype.compile = function (tokens) {
 
   var ratio = this.current / this.total;
 
   ratio = Math.min(Math.max(ratio, 0), 1);
 
-  var schema  = this.schema;
   var chars   = this.chars;
+  var schema  = this.schema;
   var percent = ratio * 100;
   var elapsed = new Date - this.start;
   var eta     = percent === 100 ? 0 : elapsed * (this.total / this.current - 1);
   var output  = schema
-    .replace(/:current/g, this.current)
     .replace(/:total/g, this.total)
+    .replace(/:current/g, this.current)
     .replace(/:elapsed/g, formatTime(elapsed))
     .replace(/:eta/g, formatTime(eta))
     .replace(/:percent/g, toFixed(percent, 0) + '%');
@@ -118,43 +117,21 @@ ProgressBar.prototype.refresh = function (tokens) {
     }
   }
 
-  var raw = output
-    .replace(/\.(bgR|r)ed/g, '')
-    .replace(/\.(bgB|b)lue/g, '')
-    .replace(/\.(bgC|c)yan/g, '')
-    .replace(/\.(bgG|g)rey/g, '')
-    .replace(/\.(bgW|w)hite/g, '')
-    .replace(/\.(bgB|b)lack/g, '')
-    .replace(/\.(bgG|g)reen/g, '')
-    .replace(/\.(bgY|y)ellow/g, '')
-    .replace(/\.(bgM|m)agenta/g, '')
-    // bright
-    .replace(/\.(bgB|b)right(Black|Red|Green|Yellow|Blue|Magenta|Cyan|White)/g, '')
-    // font style
-    .replace(/\.bold|italic|underline|inverse/g, '')
-    // gradient
-    .replace(/\.gradient\((.+),(.+)\)/g, '');
+  var raw   = bleach(output);
+  var cols  = process.stdout.columns;
+  var width = this.width;
 
-  var width   = this.width;
-  var columns = process.stdout.columns;
+  width = width < 1 ? cols * width : width;
+  width = Math.min(width, Math.max(0, cols - bareLength(raw)));
 
-  width = width < 1 ? columns * width : width;
-  width = Math.min(width, Math.max(0, columns - raw.length));
+  var length = Math.round(width * ratio);
+  var filled = repeatChar(length + 1, chars.filled);
+  var blank  = repeatChar(width - length + 1, chars.blank);
 
-  var length    = Math.round(width * ratio);
-  var blank     = repeatChar(width - length + 1, chars.blank);
-  var completed = repeatChar(length + 1, chars.completed);
+  raw    = combine(raw, filled, blank, true);
+  output = combine(output, filled, blank, false);
 
-  output = output
-    .replace(/:completed/g, completed || placeholder)
-    .replace(/:blank/g, blank || placeholder)
-    .replace(/:bar/g, (completed + blank) || placeholder);
-
-  this.raw = raw
-    .replace(/:completed/g, completed)
-    .replace(/:blank/g, blank)
-    .replace(/:bar/g, completed + blank);
-
+  this.raw = raw;
   this.render(output);
 };
 
@@ -187,7 +164,6 @@ ProgressBar.prototype.render = function (output) {
     }
 
     this.cursor.moveTo(originRow, originCol);
-    //this.cursor.write(output);
     this.colorize(output);
 
     // move the cursor to the current position.
@@ -492,15 +468,15 @@ function parseGradient(str) {
 
 function interpolate(color1, color2, percent) {
 
-  function makeChannel(a, b) {
-    return a + Math.round((b - a) * percent);
-  }
-
   return {
-    r: makeChannel(color1.r, color2.r),
-    g: makeChannel(color1.g, color2.g),
-    b: makeChannel(color1.b, color2.b)
+    r: atPercent(color1.r, color2.r, percent),
+    g: atPercent(color1.g, color2.g, percent),
+    b: atPercent(color1.b, color2.b, percent)
   };
+}
+
+function atPercent(a, b, percent) {
+  return a + Math.round((b - a) * percent);
 }
 
 function hex2rgb(color) {
@@ -531,4 +507,48 @@ function name2rgb(name) {
   }[name];
 
   return hex ? hex2rgb(hex) : null;
+}
+
+function bleach(output) {
+  return output
+    .replace(/\.(bgR|r)ed/g, '')
+    .replace(/\.(bgB|b)lue/g, '')
+    .replace(/\.(bgC|c)yan/g, '')
+    .replace(/\.(bgG|g)rey/g, '')
+    .replace(/\.(bgW|w)hite/g, '')
+    .replace(/\.(bgB|b)lack/g, '')
+    .replace(/\.(bgG|g)reen/g, '')
+    .replace(/\.(bgY|y)ellow/g, '')
+    .replace(/\.(bgM|m)agenta/g, '')
+    // bright
+    .replace(/\.(bgB|b)right(Black|Red|Green|Yellow|Blue|Magenta|Cyan|White)/g, '')
+    // font style
+    .replace(/\.bold|italic|underline|inverse/g, '')
+    // gradient
+    .replace(/\.gradient\((.+),(.+)\)/g, '');
+}
+
+function combine(output, filled, blank, bare) {
+
+  var bar = filled + blank;
+
+  if (!bare) {
+    bar    = bar || placeholder;
+    blank  = blank || placeholder;
+    filled = filled || placeholder;
+  }
+
+  return output
+    .replace(/:filled/g, filled)
+    .replace(/:blank/g, blank)
+    .replace(/:bar/g, bar);
+}
+
+function bareLength(output) {
+  var str = output
+    .replace(/:filled/g, '')
+    .replace(/:blank/g, '')
+    .replace(/:bar/g, '');
+
+  return str.length;
 }

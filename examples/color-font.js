@@ -22,7 +22,7 @@ var iv = setInterval(function () {
     completedColor = 'green';
   }
 
-  var schema = ' [.white:completed.' + completedColor + ':blank.grey] .white' + tokens;
+  var schema = ' [.white:filled.' + completedColor + ':blank.grey] .white' + tokens;
 
   bar.setSchema(schema);
   bar.tick();

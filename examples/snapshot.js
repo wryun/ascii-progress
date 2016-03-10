@@ -21,7 +21,7 @@ var bar1 = new ProgressBar({
 });
 
 var bar2 = new ProgressBar({
-  schema : '    [.white:completed.brightGreen:blank.brightYellow].white :current.red/:total.grey :percent.green :elapseds :etas',
+  schema : '    [.white:filled.brightGreen:blank.brightYellow].white :current.red/:total.grey :percent.green :elapseds :etas',
   width  : 70,
   current: 20
 });
@@ -39,7 +39,7 @@ var bar4 = new ProgressBar({
 });
 
 var bar5 = new ProgressBar({
-  schema : '    [.white:completed.gradient(red,magenta):blank] :current/:total :percent :elapseds :etas',
+  schema : '    [.white:filled.gradient(red,magenta):blank] :current/:total :percent :elapseds :etas',
   width  : 70,
   current: 50
 });
@@ -80,7 +80,7 @@ var timer = setInterval(function () {
     color = 'green';
   }
 
-  var schema = '    [.white:completed.' + color + ':blank.grey] .white' + tokens;
+  var schema = '    [.white:filled.' + color + ':blank.grey] .white' + tokens;
 
   bar4.setSchema(schema);
 
