@@ -1,5 +1,5 @@
-var ansi      = require('ansi.js');
-var cursorPos = require('get-cursor-position');
+var ansi   = require('ansi.js');
+var getpos = require('get-cursor-position');
 
 var placeholder = '\uFFFC';
 var instances   = [];
@@ -159,7 +159,7 @@ ProgressBar.prototype.render = function (output) {
   if (this.output !== output) {
 
     var repaint = !!this.origin;
-    var current = cursorPos.sync();
+    var current = getpos.sync();
 
     if (!repaint) {
       this.origin = current;
@@ -345,7 +345,7 @@ ProgressBar.prototype.terminate = function () {
 
   this.completed = true;
 
-  var currentPosition = cursorPos.sync();
+  var currentPosition = getpos.sync();
 
   if (this.clean) {
 

@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/bubkoo/node-progress-bars",
   "dependencies": {
-    "ansi.js": "0.0.2",
-    "get-cursor-position": "0.0.2"
+    "ansi.js": "0.0.3",
+    "get-cursor-position": "0.0.5"
   }
 }

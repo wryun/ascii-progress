@@ -195,7 +195,7 @@ The arguments can be color names or hex color:
 - green
 - yellow
 - magenta
-- #xxxxxx
+- \#xxxxxx
 
 
 ### Font style
