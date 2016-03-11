@@ -1,15 +1,86 @@
-var ansi   = require('ansi.js');
-var getpos = require('get-cursor-position');
+var ansi         = require('ansi.js');
+var getCurosrPos = require('get-cursor-position');
+var newlineEvent = require('./lib/newline');
 
+var stream      = process.stdout;
 var placeholder = '\uFFFC';
+var rendering   = false;
 var instances   = [];
+
+function beginUpdate() {
+  rendering = true;
+}
+
+function endUpdate() {
+  rendering = false;
+}
+
+function isUpdating() {
+  return rendering === true;
+}
+
+newlineEvent(stream);
+
+stream.on('newlines', function (count) {
+
+  if (isUpdating() || instances.length === 0) {
+    return;
+  }
+
+  var current = getCurosrPos.sync();
+  // did not reach the end, the screen need not scroll up
+  if (current.row < stream.rows) {
+    return;
+  }
+
+  var minRow = 1;
+  var cursor = instances[0].cursor;
+
+  beginUpdate();
+
+  instances.forEach(function (instance) {
+
+    if (instance.rendered && (!instance.completed || instance.tough)) {
+      // clear the rendered bar
+      instance.clear();
+      instance.origin.row = Math.max(minRow, instance.origin.row - count);
+      minRow += instance.rows;
+    } else if (instance.rendered
+      && instance.completed
+      && !instance.tough
+      && !instance.archived
+      && !instance.clean) {
+
+      instance.origin.row = -instance.rows;
+      instance.colorize(instance.output);
+      instance.archived = true;
+    }
+  });
+
+
+  // append empty row for the new lines, the screen will scroll up,
+  // then we can move the bars to their's new position.
+  cursor
+    .moveTo(current.row, current.col)
+    .write(repeatChar(count, '\n'));
+
+  instances.forEach(function (instance) {
+    if (instance.rendered && (!instance.completed || instance.tough)) {
+      instance.colorize(instance.output);
+    }
+  });
+
+  cursor.moveTo(current.row - count, current.col);
+
+  endUpdate();
+});
 
 
 function ProgressBar(options) {
 
   options = options || {};
 
-  this.cursor  = ansi(process.stdout);
+  this.cursor  = ansi(stream);
   this.total   = options.total || 100;
   this.current = options.current || 0;
   this.width   = options.width || 60;
@@ -22,17 +93,18 @@ function ProgressBar(options) {
     }
   }
 
+  this.tough = !!options.tough;
   this.clean = !!options.clean;
   this.chars = {
     blank : options.blank || '—',
     filled: options.filled || '▇'
   };
 
-  this.completed = false;
   // callback on completed
   this.callback = options.callback;
 
   this.setSchema(options.schema);
+  this.snoop();
 
   instances.push(this);
 }
@@ -57,18 +129,22 @@ ProgressBar.prototype.setSchema = function (schema, refresh) {
 
 ProgressBar.prototype.tick = function (delta, tokens) {
 
-  if (this.completed) {
-    return;
-  }
+  var type = typeof delta;
 
-  if (delta !== 0) {
-    delta = delta || 1;
-  }
-
-  // swap tokens
-  if (typeof delta === 'object') {
+  if (type === 'object') {
     tokens = delta;
     delta  = 1;
+  } else if (type === 'undefined') {
+    delta = 1;
+  } else {
+    delta = parseFloat(delta);
+    if (isNaN(delta) || !isFinite(delta)) {
+      delta = 1;
+    }
+  }
+
+  if (this.completed && delta >= 0) {
+    return;
   }
 
   if (!this.start) {
@@ -77,10 +153,7 @@ ProgressBar.prototype.tick = function (delta, tokens) {
 
   this.current += delta;
   this.compile(tokens);
-
-  if (this.current >= this.total) {
-    this.terminate();
-  }
+  this.snoop();
 };
 
 ProgressBar.prototype.update = function (ratio, tokens) {
@@ -101,12 +174,20 @@ ProgressBar.prototype.compile = function (tokens) {
   var schema  = this.schema;
   var percent = ratio * 100;
   var elapsed = new Date - this.start;
-  var eta     = percent === 100 ? 0 : elapsed * (this.total / this.current - 1);
-  var output  = schema
+
+  var eta;
+  if (this.current <= 0) {
+    eta = '-';
+  } else {
+    eta = percent === 100 ? 0 : elapsed * this.total / this.current;
+    eta = formatTime(eta);
+  }
+
+  var output = schema
     .replace(/:total/g, this.total)
     .replace(/:current/g, this.current)
     .replace(/:elapsed/g, formatTime(elapsed))
-    .replace(/:eta/g, formatTime(eta))
+    .replace(/:eta/g, eta)
     .replace(/:percent/g, toFixed(percent, 0) + '%');
 
   if (tokens && typeof tokens === 'object') {
@@ -125,54 +206,61 @@ ProgressBar.prototype.compile = function (tokens) {
   width = Math.min(width, Math.max(0, cols - bareLength(raw)));
 
   var length = Math.round(width * ratio);
-  var filled = repeatChar(length + 1, chars.filled);
-  var blank  = repeatChar(width - length + 1, chars.blank);
+  var filled = repeatChar(length, chars.filled);
+  var blank  = repeatChar(width - length, chars.blank);
 
   raw    = combine(raw, filled, blank, true);
   output = combine(output, filled, blank, false);
 
+  // without color and font styles
   this.raw = raw;
+  // row count of the progress bar
+  this.rows = raw.split('\n').length;
+
   this.render(output);
 };
 
 ProgressBar.prototype.render = function (output) {
 
-  if (this.output !== output) {
-
-    var repaint = !!this.origin;
-    var current = getpos.sync();
-
-    if (!repaint) {
-      this.origin = current;
-    }
-
-    this.clear();
-
-    var originRow = this.origin.row;
-    var originCol = this.origin.col;
-    var totalRows = process.stdout.rows;
-    var rowCount  = this.raw.split('\n').length;
-
-    if (originRow === totalRows) {
-      this.cursor.write(repeatChar(rowCount, '\n'));
-      instances.forEach(function (instance) {
-        if (instance.origin) {
-          instance.origin.row -= rowCount;
-        }
-      });
-      originRow -= rowCount - 1;
-    }
-
-    this.cursor.moveTo(originRow, originCol);
-    this.colorize(output);
-
-    // move the cursor to the current position.
-    if (repaint) {
-      this.cursor.moveTo(current.row, current.col);
-    }
-
-    this.output = output;
+  if (this.output === output) {
+    return;
   }
+
+  var current = getCurosrPos.sync();
+  if (!current) {
+    return;
+  }
+
+  beginUpdate();
+
+  this.savePos = current;
+  if (!this.origin) {
+    this.origin = current;
+  }
+
+  if (this.origin.row === stream.rows) {
+
+    this.cursor.write(repeatChar(this.rows, '\n'));
+
+    instances.forEach(function (instance) {
+      if (instance.origin) {
+        instance.origin.row -= this.rows;
+      }
+    }, this);
+  }
+
+  this.clear();
+  this.colorize(output);
+
+  // move the cursor to the current position.
+  if (this.rendered) {
+    this.cursor.moveTo(current.row, current.col);
+  }
+
+  this.output   = output;
+  this.rendered = true;
+
+  endUpdate();
 };
 
 ProgressBar.prototype.colorize = function (output) {
@@ -181,6 +269,8 @@ ProgressBar.prototype.colorize = function (output) {
   var parts   = output.split(/(\.[A-Za-z]+)/g);
   var content = '';
   var matches = [];
+
+  cursor.moveTo(this.origin.row, this.origin.col);
 
   function write() {
 
@@ -310,9 +400,7 @@ ProgressBar.prototype.clear = function () {
 
   if (this.output) {
     this.cursor.moveTo(this.origin.row, this.origin.col);
-
-    var lines = this.raw.split('\n');
-    for (var i = 0, l = lines.length; i < l; i++) {
+    for (var i = 0; i < this.rows; i++) {
       this.cursor
         .eraseLine()
         .moveDown();
@@ -321,28 +409,31 @@ ProgressBar.prototype.clear = function () {
   }
 };
 
-ProgressBar.prototype.terminate = function () {
+ProgressBar.prototype.snoop = function () {
 
-  this.completed = true;
+  this.completed = this.current >= this.total;
 
-  var currentPosition = getpos.sync();
-
-  if (this.clean) {
-
-    this.clear();
-
-    var lines = this.raw.split('\n');
-    for (var i = 0, l = lines.length; i < l; i++) {
-      this.cursor
-        .deleteLine()
-        .moveDown();
-    }
+  if (this.completed) {
+    this.terminate();
   }
 
-  this.cursor.moveTo(this.origin.row, this.origin.col);
+  return this.completed;
+};
+
+ProgressBar.prototype.terminate = function () {
+
+  if (this.clean && this.rendered) {
+    this.clear();
+    //var lines = this.raw.split('\n');
+    //for (var i = 0; i < this.rows; i++) {
+    //  this.cursor
+    //    .deleteLine()
+    //    .moveDown();
+    //}
+  }
 
   this.callback && this.callback(this);
-  this.cursor.moveTo(currentPosition.row, currentPosition.col);
+  this.cursor.moveTo(this.savePos.row, this.savePos.col);
 };
 
 
@@ -381,8 +472,8 @@ function ucFirst(str) {
   return str.charAt(0).toUpperCase() + str.substring(1);
 }
 
-function repeatChar(len, char) {
-  return new Array(len).join(char);
+function repeatChar(count, char) {
+  return new Array(count + 1).join(char);
 }
 
 function parseMethod(cursor, str) {
