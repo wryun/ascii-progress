@@ -51,6 +51,7 @@ stream.on('newlines', function (count) {
       && !instance.archived
       && !instance.clean) {
 
+      instance.clear();
       instance.origin.row = -instance.rows;
       instance.colorize(instance.output);
       instance.archived = true;
