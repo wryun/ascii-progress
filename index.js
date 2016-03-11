@@ -1,6 +1,6 @@
 var ansi         = require('ansi.js');
 var getCurosrPos = require('get-cursor-position');
-var newlineEvent = require('./lib/newline');
+var newlineEvent = require('on-new-line');
 
 var stream      = process.stdout;
 var placeholder = '\uFFFC';
@@ -21,7 +21,7 @@ function isUpdating() {
 
 newlineEvent(stream);
 
-stream.on('newlines', function (count) {
+stream.on('before:newlines', function (count) {
 
   if (isUpdating() || instances.length === 0) {
     return;
