@@ -1,8 +1,9 @@
 # node-progress-bars
 
-> Render ascii progress bar(s) on the terminal.
+> Ascii progress-bar(s) in the terminal.
 
 ![snapshot](https://raw.githubusercontent.com/bubkoo/node-progress-bars/master/snapshot.gif)
+
 
 ## Install
 
@@ -11,6 +12,8 @@ $ npm install node-progress-bars
 ```
 
 ## Usage
+
+> For more usage see the [examples](https://github.com/bubkoo/node-progress-bars/blob/master/examples)
 
 ```javascript
 var ProgressBar = require('node-progress-bars');
@@ -28,58 +31,21 @@ var iv = setInterval(function () {
 }, 100);
 ```
 
+
 ### Options
 
 These are keys in the options object you can pass to the progress bar along with
 `total` as seen in the example above.
 
-#### schema
 
-Template string of the progress bar. 
-
-Default `" [:bar] :current/:total :percent :elapseds :etas'"`.
-
-#### total
-
-Total number of ticks to complete. 
-
-Default `100`.
-
-#### current
-
-The number of completed ticks. 
-
-Default `0`.
-
-#### width
- 
-The displayed width of the progress bar, if `width` is percentage or less 
-than `1` the width is relative, otherwise it is absolute with. 
-
-Default `options.total`.
-
-
-#### filled 
-
-Completion character. 
-
-Default `"▇"`.
-
-#### blank 
-
-Blank character. 
-
-Default `"-"`.
-
-#### clear 
-
-Option to clear the progress bar on completion. 
-
-Default `false`.
-
-#### callback 
-
-Optional function to call when the progress bar completes.
+- `schema` - template string of the progress bar. Default `" [:bar] :current/:total :percent :elapseds :etas'"`.
+- `total` - total number of ticks to complete. Default `100`.
+- `current`- the number of completed ticks. Default `0`.
+- `width` - the displayed width of the progress bar, if `width` is percentage or less than `1` the width is relative, otherwise it is absolute with. Default `options.total`.
+- `filled`- completion character. Default `"▇"`.
+- `blank` - blank character. Default `"-"`.
+- `clear` - option to clear the progress bar on completion. Default `false`.
+- `callback` -  optional function to call when the progress bar completes.
 
 
 ### Properties
@@ -225,10 +191,10 @@ Same as color names, font style can also be assigned by name:
 
 The percentage is green and bold.
 
-## Examples
 
-These are many examples in the `examples` folder.
+## Contributing
 
-## License
+Pull requests and stars are highly welcome.
 
-[MIT](https://github.com/bubkoo/ansi.js/blob/master/LICENSE) © bubkoo
+For bugs and feature requests, please [create an issue](https://github.com/bubkoo/node-progress-bars/issues/new).
+
