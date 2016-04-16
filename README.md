@@ -40,11 +40,11 @@ These are keys in the options object you can pass to the progress bar along with
 
 - `schema` - template string of the progress bar. Default `" [:bar] :current/:total :percent :elapseds :etas'"`.
 - `total` - total number of ticks to complete. Default `100`.
-- `current`- the number of completed ticks. Default `0`.
-- `width` - the display width of the progress bar, percentage or less than `1` is relative the terminal's width. Default `options.total`.
+- `current`- number of completed ticks. Default `0`.
+- `width` - display width, percentage or less than `1` is relative the terminal's width. Default `options.total`.
 - `filled`- completion character. Default `"▇"`.
 - `blank` - blank character. Default `"-"`.
-- `clear` - option to clear the progress bar on completion. Default `false`.
+- `clear` - clear the progress bar on completion. Default `false`.
 - `callback` -  optional function to call when the progress bar completes.
 
 
