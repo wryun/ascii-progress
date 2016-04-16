@@ -19,7 +19,7 @@ function backward() {
   if (bar.current === 0) {
     bar.terminate();
   } else {
-    setTimeout(backward, 20);
+    setTimeout(backward, 10);
   }
 }
 
