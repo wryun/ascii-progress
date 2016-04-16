@@ -2,6 +2,14 @@
 
 > Ascii progress-bar(s) in the terminal.
 
+**Feature**:
+
+- Support multi progress-bars
+- Relative and absolute with
+- Colorful bar and text
+- Highly customizable
+
+
 ![snapshot](https://raw.githubusercontent.com/bubkoo/node-progress-bars/master/snapshot.gif)
 
 

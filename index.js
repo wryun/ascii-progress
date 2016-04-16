@@ -1,4 +1,6 @@
 var ansi         = require('ansi.js');
+var endWith      = require('end-with');
+var startWith    = require('start-with');
 var getCurosrPos = require('get-cursor-position');
 var newlineEvent = require('on-new-line');
 
@@ -97,7 +99,7 @@ function ProgressBar(options) {
   this.tough = !!options.tough;
   this.clean = !!options.clean;
   this.chars = {
-    blank : options.blank || '—',
+    blank: options.blank || '—',
     filled: options.filled || '▇'
   };
 
@@ -454,17 +456,6 @@ function formatTime(ms) {
     : toFixed(ms / 1000, 1);
 }
 
-function startWith(str, prefix) {
-  return ('' + str).indexOf(prefix) === 0;
-}
-
-function endWith(str, suffix) {
-
-  str = '' + str;
-
-  return str.indexOf(suffix, str.length - suffix.length) !== -1;
-}
-
 function lcFirst(str) {
   return str.charAt(0).toLowerCase() + str.substring(1);
 }
@@ -511,7 +502,7 @@ function parseColor(cursor, str) {
 
     if (typeof cursor[method] === 'function') {
       return {
-        isBg  : isBg,
+        isBg: isBg,
         method: method,
         suffix: suffix
       };
@@ -587,14 +578,14 @@ function hex2rgb(color) {
 
 function name2rgb(name) {
   var hex = {
-    red    : '#ff0000',
-    blue   : '#0000ff',
-    cyan   : '#00ffff',
-    grey   : '#808080',
-    white  : '#ffffff',
-    black  : '#000000',
-    green  : '#008000',
-    yellow : '#ffff00',
+    red: '#ff0000',
+    blue: '#0000ff',
+    cyan: '#00ffff',
+    grey: '#808080',
+    white: '#ffffff',
+    black: '#000000',
+    green: '#008000',
+    yellow: '#ffff00',
     magenta: '#ff00ff'
   }[name];
 
