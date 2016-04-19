@@ -10,21 +10,21 @@
 - Highly customizable
 
 
-![snapshot](https://raw.githubusercontent.com/bubkoo/node-progress-bars/master/snapshot.gif)
+![snapshot](https://raw.githubusercontent.com/bubkoo/ascii-progress/master/snapshot.gif)
 
 
 ## Install
 
 ```
-$ npm install node-progress-bars
+$ npm install ascii-progress
 ```
 
 ## Usage
 
-> For more usage see the [examples](https://github.com/bubkoo/node-progress-bars/blob/master/examples)
+> For more usage see the [examples](https://github.com/bubkoo/ascii-progress/blob/master/examples)
 
 ```javascript
-var ProgressBar = require('node-progress-bars');
+var ProgressBar = require('ascii-progress');
 
 var bar = new ProgressBar({ 
     schema: ':bar'
@@ -204,5 +204,5 @@ The percentage is green and bold.
 
 Pull requests and stars are highly welcome.
 
-For bugs and feature requests, please [create an issue](https://github.com/bubkoo/node-progress-bars/issues/new).
+For bugs and feature requests, please [create an issue](https://github.com/bubkoo/ascii-progress/issues/new).
 
