@@ -1,4 +1,4 @@
-# node-progress-bars
+# ascii-progress
 
 > Ascii progress-bar(s) in the terminal.
 
