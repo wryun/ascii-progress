@@ -1,6 +1,6 @@
 {
   "name": "ascii-progress",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ascii progress-bar(s) in the terminal.",
   "main": "index.js",
   "scripts": {
