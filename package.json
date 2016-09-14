@@ -1,6 +1,6 @@
 {
   "name": "ascii-progress",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Ascii progress-bar(s) in the terminal.",
   "main": "index.js",
   "scripts": {
@@ -32,7 +32,7 @@
   "dependencies": {
     "ansi.js": "0.0.5",
     "end-with": "^1.0.2",
-    "get-cursor-position": "1.0.1",
+    "get-cursor-position": "1.0.2",
     "on-new-line": "1.0.0",
     "start-with": "^1.0.2"
   }
