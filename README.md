@@ -2,6 +2,10 @@
 
 > Ascii progress-bar(s) in the terminal.
 
+[![MIT License](https://img.shields.io/badge/license-MIT_License-green.svg?style=flat-square)](https://github.com/bubkoo/ascii-progress/blob/master/LICENSE)
+[![Package Quality](http://npm.packagequality.com/shield/ascii-progress.svg)](http://packagequality.com/#?package=ascii-progress)
+
+
 **Feature**:
 
 - Support multi progress-bars
