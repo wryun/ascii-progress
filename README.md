@@ -27,7 +27,7 @@ $ npm install ascii-progress
 var ProgressBar = require('ascii-progress');
 
 var bar = new ProgressBar({ 
-    schema: ':bar'
+    schema: ':bar',
     total : 10 
 });
 
