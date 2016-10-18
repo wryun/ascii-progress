@@ -5,6 +5,9 @@ var getCurosrPos = require('get-cursor-position');
 var newlineEvent = require('on-new-line');
 
 var stream      = process.stdout;
+stream.rows     = stream.rows || 40;
+stream.columns  = stream.columns || 80;
+
 var placeholder = '\uFFFC';
 var rendering   = false;
 var instances   = [];
