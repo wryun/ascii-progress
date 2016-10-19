@@ -33,6 +33,10 @@ stream.on('before:newlines', function (count) {
   }
 
   var current = getCurosrPos.sync();
+  if(!current){
+    return;
+  }
+  
   // did not reach the end, the screen need not scroll up
   if (current.row < stream.rows) {
     return;
