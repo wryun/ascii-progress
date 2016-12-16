@@ -1,5 +1,5 @@
 {
-  "name": "ascii-progress",
+  "name": "node-progress-bars",
   "version": "1.0.5",
   "description": "Ascii progress-bar(s) in the terminal.",
   "main": "index.js",
