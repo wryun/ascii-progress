@@ -36,7 +36,7 @@ stream.on('before:newlines', function (count) {
   if(!current){
     return;
   }
-  
+
   // did not reach the end, the screen need not scroll up
   if (current.row < stream.rows) {
     return;
@@ -94,6 +94,7 @@ function ProgressBar(options) {
   this.total   = options.total || 100;
   this.current = options.current || 0;
   this.width   = options.width || 60;
+  this.fixedWidth = options.fixedWidth;
 
   if (typeof this.width === 'string') {
     if (endWith(this.width, '%')) {
@@ -213,7 +214,9 @@ ProgressBar.prototype.compile = function (tokens) {
   var width = this.width;
 
   width = width < 1 ? cols * width : width;
-  width = Math.min(width, Math.max(0, cols - bareLength(raw)));
+  if (!this.fixedWidth) {
+    width = Math.min(width, Math.max(0, cols - bareLength(raw)));
+  }
 
   var length = Math.round(width * ratio);
   var filled = repeatChar(length, chars.filled);
