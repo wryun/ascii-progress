@@ -275,6 +275,16 @@ ProgressBar.prototype.render = function (output) {
 
 ProgressBar.prototype.colorize = function (output) {
 
+  var charsLeft = process.stdout.columns - 1;
+  function writeChars (chars) {
+    if (!charsLeft) {
+      return;
+    }
+
+    cursor.write(chars.slice(0, charsLeft));
+    charsLeft = Math.max(0, charsLeft - chars.length);
+  }
+
   var cursor  = this.cursor;
   var parts   = output.split(/(\.[A-Za-z]+)/g);
   var content = '';
@@ -329,11 +339,11 @@ ProgressBar.prototype.colorize = function (output) {
             : interpolate(color1, color2, (i + 1) / l);
 
           cursor.fg.rgb(color.r, color.g, color.b);
-          cursor.write(content[i]);
+          writeChars(content[i]);
           cursor.fg.reset();
         }
       } else {
-        cursor.write(content);
+        writeChars(content);
       }
     }
 
@@ -386,7 +396,7 @@ ProgressBar.prototype.colorize = function (output) {
           parts[i + 1] += match.suffix;
         } else {
           // the last one
-          cursor.write(match.suffix);
+          writeChars(match.suffix);
         }
       }
 
